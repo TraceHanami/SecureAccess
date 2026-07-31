@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secure-access"
+version = "1.0.0"
+description = "A desktop application for encrypting and protecting sensitive files with strong cryptography."
+readme = "README.md"
+authors = [
+    { name = "TraceHanami", email = "tracehanami@github.com" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = [
+    "customtkinter>=5.0.0",
+    "cryptography>=3.4.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/TraceHanami/SecureAccess"
+Repository = "https://github.com/TraceHanami/SecureAccess"
+
+[project.scripts]
+secure-access = "secure_access.gui:main"

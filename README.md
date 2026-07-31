@@ -1,74 +1,84 @@
 # 🔐 SecureAccess — Personal File Vault
 
-> A desktop application for encrypting and protecting sensitive files with strong cryptography and user authentication.
+> A desktop application for encrypting and protecting sensitive files with strong cryptography and secure user authentication.
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-blueviolet)](https://github.com/TomSchimansky/CustomTkinter)
 [![Cryptography](https://img.shields.io/badge/Crypto-Fernet%20%7C%20PBKDF2-orange)](https://cryptography.io)
+[![CI](https://github.com/TraceHanami/SecureAccess/actions/workflows/ci.yml/badge.svg)](https://github.com/TraceHanami/SecureAccess/actions)
 
 ---
 
-## Overview
+## 🌟 Overview
 
 **SecureAccess** is a desktop-based personal file vault that enables users to encrypt and decrypt sensitive files using industry-standard cryptographic techniques. It combines secure user authentication with authenticated encryption to ensure that only authorized users can access protected files.
 
-This project demonstrates practical implementation of applied cryptography, secure access control, and desktop application security using Python.
+This project demonstrates practical implementation of applied cryptography, secure access control, and modular Python application design.
 
 ---
 
-## Features
+## ✨ Key Features
 
 | Feature | Description |
 |---|---|
-| 🔑 User Authentication | Secure login and signup with persistent user accounts |
-| 🔒 Password Hashing | SHA-256 hashing for stored credentials |
-| 🧂 Key Derivation | PBKDF2 with salt and high iteration count for strong key derivation |
-| 🛡️ Authenticated Encryption | Fernet (AES-128-CBC + HMAC-SHA256) for file encryption |
-| 📁 In-Place Operations | Encrypt and decrypt files without creating duplicates |
-| 🏷️ Encrypted File Headers | Custom header validation to verify file integrity |
-| 🖥️ Modern GUI | Clean, responsive interface built with CustomTkinter |
-| 🔓 Session Management | Secure session handling with logout support |
+| 🔑 **User Authentication** | Secure login and signup with sanitized username boundary checks |
+| 🔒 **Password Hashing** | PBKDF2-HMAC-SHA256 with 200,000 iterations & random 16-byte salt |
+| 🧂 **Key Derivation** | PBKDF2 key derivation with 300,000 iterations per encryption task |
+| 🛡️ **Authenticated Encryption** | Fernet (AES-128-CBC + HMAC-SHA256) for payload confidentiality & integrity |
+| ⚛️ **Atomic File Operations** | Prevents file corruption during unexpected crashes via temporary staging |
+| 🏷️ **Header Validation** | 25-byte binary header (`b"SVLT"`) format to verify file integrity |
+| 🖥️ **Modern GUI** | Responsive dark mode interface built with CustomTkinter |
+| 🔓 **Session Hardening** | 5-minute inactivity auto-logout and 3-attempt account lockout |
 
 ---
 
-## Tech Stack
-
-- **Language:** Python 3.8+
-- **GUI Framework:** [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)
-- **Cryptography:** [cryptography](https://cryptography.io) — Fernet, PBKDF2HMAC
-- **Storage:** Local JSON-based user store
-
----
-
-## Security Architecture
+## 🏗️ Security Architecture
 
 ```
 Password
    │
    ▼
-SHA-256 Hash ──────────────► Stored in users.json
+PBKDF2-HMAC-SHA256 (200k iterations + 16B salt) ──► Stored in users.json (0o600)
    │
    ▼
-PBKDF2HMAC (salt + iterations)
-   │
-   ▼
-Derived Key
-   │
-   ▼
-Fernet (AES-128-CBC + HMAC-SHA256)
-   │
-   ▼
-Encrypted File (with custom header)
+Passcode + File Salt (16B) ──► PBKDF2HMAC (300k iterations)
+                                    │
+                                    ▼
+Derived 32-Byte Key ──► Fernet (AES-128-CBC + HMAC-SHA256)
+                                    │
+                                    ▼
+                Encrypted Vault File (Header: b"SVLT" | Version 1 | Salt | Iterations)
 ```
-
-- **Key derivation** uses PBKDF2 with a unique salt per user and a high iteration count, making brute-force attacks computationally expensive.
-- **Fernet encryption** provides authenticated encryption, guaranteeing both confidentiality and integrity of encrypted files.
-- **Custom file headers** allow SecureAccess to validate encrypted files before attempting decryption.
 
 ---
 
-## Getting Started
+## 📁 Modular Project Structure
+
+```
+SecureAccess/
+├── .github/workflows/ci.yml # GitHub Actions CI automation
+├── secure_access/           # Main application package
+│   ├── __init__.py          # Package initialization & versioning
+│   ├── config.py            # Global constants & configuration
+│   ├── crypto.py            # Key derivation & Fernet encryption engines
+│   ├── auth.py              # User authentication & PBKDF2 hashing
+│   ├── vault.py             # Vault path validation & atomic file writing
+│   └── gui.py               # CustomTkinter GUI application
+├── tests/                   # Automated test suite
+│   ├── test_crypto.py       # Crypto unit tests
+│   ├── test_auth.py         # Authentication unit tests
+│   └── test_vault.py        # Vault & atomic file write tests
+├── secure_access.py         # Root entry point launcher script
+├── pyproject.toml           # Modern Python package build configuration
+├── requirements.txt         # Dependencies
+├── LICENSE                  # MIT License
+└── README.md                # Project documentation
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -77,89 +87,41 @@ Encrypted File (with custom header)
 
 ### Installation
 
-**1. Clone the repository**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/TraceHanami/SecureAccess.git
+   cd SecureAccess
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the application**
+   ```bash
+   python secure_access.py
+   ```
+
+---
+
+## 🧪 Running Unit Tests
+
+The repository includes a comprehensive unit test suite:
 
 ```bash
-git clone https://github.com/TraceHanami/SecureAccess.git
-cd SecureAccess
-```
-
-**2. Install dependencies**
-
-```bash
-pip install -r requirements.txt
-```
-
-**3. Run the application**
-
-```bash
-python secure_access.py
+python -m unittest discover -s tests
 ```
 
 ---
 
-## Usage
+## 📄 License
 
-1. **Sign Up** — Create a new account with a username and password.
-2. **Log In** — Authenticate with your credentials to start a session.
-3. **Encrypt a File** — Select any file to encrypt it in place. The file is protected with your derived key.
-4. **Decrypt a File** — Select an encrypted file to restore it to its original form.
-5. **Log Out** — End your session securely.
-
-> ⚠️ **Important:** If you forget your password, encrypted files cannot be recovered. There is no password reset mechanism by design.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Project Structure
-
-```
-SecureAccess/
-├── secure_access.py      # Main application entry point
-├── requirements.txt      # Python dependencies
-├── users.json            # Local user credential store (auto-generated)
-└── README.md
-```
-
----
-
-## Requirements
-
-```
-customtkinter
-cryptography
-```
-
-Install all dependencies with:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Contributing
-
-Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m 'Add your feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a pull request
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Author
+## 👨‍💻 Author
 
 **TraceHanami**  
 GitHub: [@TraceHanami](https://github.com/TraceHanami/SecureAccess)
-
----
-
-*Built as a demonstration of applied cryptography and secure desktop application development in Python.*
